@@ -6,6 +6,9 @@ on:
     - cron: "0 0 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   run-bio-radar:
     runs-on: ubuntu-latest
@@ -40,5 +43,18 @@ jobs:
           MAIL_FROM: ${{ secrets.MAIL_FROM }}
           # 收件人邮箱，多个用逗号分隔
           MAIL_TO: ${{ secrets.MAIL_TO }}
-        run: python main.py
-        # 如需测试可改为：python main.py --skip-email --output bio_radar_report.md
+        run: python main.py --archive-dir reports
+        # 如需测试可改为：python main.py --skip-email --archive-dir reports
+
+      - name: Commit archived reports
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain reports)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add reports
+            git commit -m "chore: archive bio radar report ($(date -u +%F))"
+            git push
+          else
+            echo "No report changes to commit"
+          fi

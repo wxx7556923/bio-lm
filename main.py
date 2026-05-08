@@ -6,6 +6,7 @@ Bio-AI 科研情报雷达：抓取 GitHub Bio-AI 项目，生成中文情报摘�
 python main.py --skip-email --output bio_radar_report.md
 python main.py --skip-ai --output github_projects.json
 python main.py --dry-run
+python main.py --skip-email --archive-dir reports
 """
 
 import argparse
@@ -22,7 +23,6 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import requests
-from openai import OpenAI
 
 GITHUB_SEARCH_URL = "https://api.github.com/search/repositories"
 GITHUB_REPO_URL = "https://api.github.com/repos"
@@ -104,6 +104,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-email", action="store_true", help="生成报告但不发送邮件")
     parser.add_argument("--max-readme", type=int, default=800, help="README 截取长度，默认 800")
     parser.add_argument("--output", type=str, default="", help="可选输出文件路径")
+    parser.add_argument(
+        "--archive-dir",
+        type=str,
+        default="",
+        help="可选，按日期自动归档报告目录，例如 reports",
+    )
     return parser.parse_args()
 
 
@@ -126,6 +132,116 @@ def write_output(path_str: str, content: str) -> Path:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(content, encoding="utf-8")
     return output_path
+
+
+def archive_report(run_date: str, report_markdown: str, archive_dir: str) -> Path:
+    archive_base = Path(archive_dir)
+    file_path = archive_base / f"bio_radar_{run_date}.md"
+    final_path = safe_output_path(str(file_path))
+    final_path.parent.mkdir(parents=True, exist_ok=True)
+    final_path.write_text(report_markdown, encoding="utf-8")
+    return final_path
+
+
+def extract_daily_summary(report_markdown: str, max_paragraphs: int = 2, max_chars: int = 160) -> str:
+    lines = report_markdown.splitlines()
+    section_start = -1
+    section_end = len(lines)
+
+    for idx, line in enumerate(lines):
+        if line.strip().startswith("## 一、Top 高星区技术风向"):
+            section_start = idx + 1
+            break
+
+    if section_start >= 0:
+        for idx in range(section_start, len(lines)):
+            if lines[idx].strip().startswith("## "):
+                section_end = idx
+                break
+        source_lines = lines[section_start:section_end]
+    else:
+        source_lines = lines
+
+    paragraphs: List[str] = []
+    buffer: List[str] = []
+    for raw in source_lines:
+        s = raw.strip()
+        if not s:
+            if buffer:
+                paragraphs.append(" ".join(buffer))
+                buffer = []
+            continue
+        if s.startswith("#"):
+            continue
+        # 清理列表前缀，便于生成简短摘要。
+        s = re.sub(r"^[-*]\s+", "", s)
+        s = re.sub(r"^\d+\.\s*", "", s)
+        buffer.append(s)
+
+    if buffer:
+        paragraphs.append(" ".join(buffer))
+
+    cleaned = [p for p in paragraphs if p and not p.startswith("这里写")]
+    if not cleaned:
+        return "线索不足，需要进一步核验。"
+
+    summary = " ".join(cleaned[:max_paragraphs])
+    summary = re.sub(r"\s+", " ", summary).strip()
+    if len(summary) > max_chars:
+        summary = summary[: max_chars - 1].rstrip() + "…"
+    return summary
+
+
+def report_sort_key(path: Path) -> str:
+    # 文件名示例：bio_radar_2026-05-08.md 或 bio_radar_2026-05-08_20260508_120000.md
+    return path.stem.replace("bio_radar_", "")
+
+
+def update_archive_index(archive_dir: str) -> Path:
+    archive_base = Path(archive_dir)
+    archive_base.mkdir(parents=True, exist_ok=True)
+
+    report_files = sorted(
+        archive_base.glob("bio_radar_*.md"),
+        key=report_sort_key,
+        reverse=True,
+    )
+
+    now_label = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    lines = [
+        "# Bio-AI Radar Reports Archive",
+        "",
+        "自动生成的日报索引，按日期倒序列出历史报告。",
+        f"最后更新：{now_label} (Asia/Shanghai)",
+        "",
+    ]
+
+    if not report_files:
+        lines.append("当前暂无归档报告。")
+    else:
+        latest = report_files[0]
+        latest_text = latest.read_text(encoding="utf-8")
+        latest_summary = extract_daily_summary(latest_text)
+        lines.extend(
+            [
+                "## 最新一期",
+                f"- [{latest.name}](./{latest.name})",
+                f"摘要：{latest_summary}",
+                "",
+                "## 历史列表（倒序）",
+            ]
+        )
+
+        for report_path in report_files:
+            report_text = report_path.read_text(encoding="utf-8")
+            summary = extract_daily_summary(report_text)
+            date_match = re.search(r"bio_radar_(\d{4}-\d{2}-\d{2})", report_path.name)
+            date_label = date_match.group(1) if date_match else "unknown-date"
+            lines.append(f"- {date_label} | [{report_path.name}](./{report_path.name}) | 摘要：{summary}")
+
+    index_path = archive_base / "README.md"
+    index_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return index_path
 
 
 def parse_gh_time(ts: str) -> datetime:
@@ -364,6 +480,11 @@ def build_user_prompt(run_date: str, repos: List[Dict]) -> str:
 
 
 def generate_deepseek_report(api_key: str, run_date: str, repos: List[Dict]) -> str:
+    try:
+        from openai import OpenAI
+    except ImportError as exc:
+        raise RuntimeError("缺少 openai 依赖，请先执行: pip install -r requirements.txt") from exc
+
     client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
     response = client.chat.completions.create(
         model="deepseek-chat",
@@ -598,6 +719,12 @@ def main() -> int:
     if args.output:
         out_path = write_output(args.output, report_markdown)
         log(f"报告已写入本地文件: {out_path}")
+
+    if args.archive_dir:
+        archive_path = archive_report(run_date, report_markdown, args.archive_dir)
+        log(f"报告已归档保存: {archive_path}")
+        index_path = update_archive_index(args.archive_dir)
+        log(f"归档索引已更新: {index_path}")
 
     if skip_email:
         log("已按参数跳过邮件发送")
