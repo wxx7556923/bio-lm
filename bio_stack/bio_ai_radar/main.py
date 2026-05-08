@@ -3,10 +3,10 @@
 Bio-AI 科研情报雷达：抓取 GitHub Bio-AI 项目，生成中文情报摘要并邮件推送。
 
 本地运行示例：
-python main.py --skip-email --output bio_radar_report.md
-python main.py --skip-ai --output github_projects.json
-python main.py --dry-run
-python main.py --skip-email --archive-dir reports
+python bio_stack/bio_ai_radar/main.py --skip-email --output bio_stack/bio_ai_radar/bio_radar_report.md
+python bio_stack/bio_ai_radar/main.py --skip-ai --output bio_stack/bio_ai_radar/github_projects.json
+python bio_stack/bio_ai_radar/main.py --dry-run
+python bio_stack/bio_ai_radar/main.py --skip-email --archive-dir bio_stack/bio_ai_radar/reports
 """
 
 import argparse

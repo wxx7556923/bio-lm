@@ -23,9 +23,11 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
+        working-directory: bio_stack/bio_ai_radar
         run: pip install -r requirements.txt
 
       - name: Run Bio-AI Radar
+        working-directory: bio_stack/bio_ai_radar
         env:
           # GitHub API Token（提高 GitHub Search 速率上限）
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,10 +51,10 @@ jobs:
       - name: Commit archived reports
         if: always()
         run: |
-          if [ -n "$(git status --porcelain reports)" ]; then
+          if [ -n "$(git status --porcelain bio_stack/bio_ai_radar/reports)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add reports
+            git add bio_stack/bio_ai_radar/reports
             git commit -m "chore: archive bio radar report ($(date -u +%F))"
             git push
           else
