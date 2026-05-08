@@ -1,0 +1,44 @@
+name: Bio AI Radar
+
+on:
+  schedule:
+    # UTC 00:00 = 北京时间 08:00
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  run-bio-radar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Bio-AI Radar
+        env:
+          # GitHub API Token（提高 GitHub Search 速率上限）
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # DeepSeek API Key（用于生成中文科研情报摘要）
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          # SMTP 服务器地址，例如 smtp.qq.com / smtp.gmail.com
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          # SMTP 端口，465(SSL) 或 587(TLS)
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          # SMTP 登录用户名
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          # SMTP 密码或授权码
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          # 发件人邮箱
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          # 收件人邮箱，多个用逗号分隔
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: python main.py
+        # 如需测试可改为：python main.py --skip-email --output bio_radar_report.md

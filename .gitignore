@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+tmp/
+data/
+output/
+*.log
+*.sqlite
+*.db
+github_projects*.json
+bio_radar_report*.md
