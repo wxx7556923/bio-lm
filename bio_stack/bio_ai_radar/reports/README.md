@@ -1,13 +1,14 @@
 # Bio-AI Radar Reports Archive
 
 自动生成的日报索引，按日期倒序列出历史报告。
-最后更新：2026-06-08 04:08:24 (Asia/Shanghai)
+最后更新：2026-06-09 03:38:19 (Asia/Shanghai)
 
 ## 最新一期
-- [bio_radar_2026-06-08.md](./bio_radar_2026-06-08.md)
+- [bio_radar_2026-06-09.md](./bio_radar_2026-06-09.md)
 摘要：DeepSeek 总结失败，暂无法自动生成趋势分析。 错误信息：`Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****2f87 is invalid', 'type': 'authentication_err…
 
 ## 历史列表（倒序）
+- 2026-06-09 | [bio_radar_2026-06-09.md](./bio_radar_2026-06-09.md) | 摘要：DeepSeek 总结失败，暂无法自动生成趋势分析。 错误信息：`Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****2f87 is invalid', 'type': 'authentication_err…
 - 2026-06-08 | [bio_radar_2026-06-08.md](./bio_radar_2026-06-08.md) | 摘要：DeepSeek 总结失败，暂无法自动生成趋势分析。 错误信息：`Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****2f87 is invalid', 'type': 'authentication_err…
 - 2026-06-07 | [bio_radar_2026-06-07.md](./bio_radar_2026-06-07.md) | 摘要：本期高星项目（stars ≥ 5）呈现出以下显著趋势： **基因组基础模型进入“实用化”与“专业化”阶段**：以 Hugging Face 的 **Carbon** 和 BGI 的 **Genos-m** 为代表，基因组大模型不再仅停留在论文层面，而是开始提供完整的模型权重、评估代码和微调脚本。Carbon 主打通用…
 - 2026-06-06 | [bio_radar_2026-06-06.md](./bio_radar_2026-06-06.md) | 摘要：本期高星项目（stars ≥ 5）共 19 个，呈现出以下显著趋势： Hugging Face 的 **Carbon**（190 stars）以 1T tokens / 6T DNA 碱基对训练，是当前最大规模的因果 DNA 语言模型之一，且提供了零样本评估套件，标志着基因组基础模型从“单物种”走向“通用基因组”。…
