@@ -1,13 +1,14 @@
 # Bio-AI Radar Reports Archive
 
 自动生成的日报索引，按日期倒序列出历史报告。
-最后更新：2026-07-31 02:53:10 (Asia/Shanghai)
+最后更新：2026-08-01 02:52:05 (Asia/Shanghai)
 
 ## 最新一期
-- [bio_radar_2026-07-31.md](./bio_radar_2026-07-31.md)
+- [bio_radar_2026-08-01.md](./bio_radar_2026-08-01.md)
 摘要：DeepSeek 总结失败，暂无法自动生成趋势分析。 错误信息：`Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****2f87 is invalid', 'type': 'authentication_err…
 
 ## 历史列表（倒序）
+- 2026-08-01 | [bio_radar_2026-08-01.md](./bio_radar_2026-08-01.md) | 摘要：DeepSeek 总结失败，暂无法自动生成趋势分析。 错误信息：`Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****2f87 is invalid', 'type': 'authentication_err…
 - 2026-07-31 | [bio_radar_2026-07-31.md](./bio_radar_2026-07-31.md) | 摘要：DeepSeek 总结失败，暂无法自动生成趋势分析。 错误信息：`Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****2f87 is invalid', 'type': 'authentication_err…
 - 2026-07-30 | [bio_radar_2026-07-30.md](./bio_radar_2026-07-30.md) | 摘要：DeepSeek 总结失败，暂无法自动生成趋势分析。 错误信息：`Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****2f87 is invalid', 'type': 'authentication_err…
 - 2026-07-29 | [bio_radar_2026-07-29.md](./bio_radar_2026-07-29.md) | 摘要：DeepSeek 总结失败，暂无法自动生成趋势分析。 错误信息：`Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****2f87 is invalid', 'type': 'authentication_err…
